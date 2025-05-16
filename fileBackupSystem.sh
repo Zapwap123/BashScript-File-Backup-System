@@ -14,17 +14,29 @@
 #   ./fileBackupSystem.sh full /path/to/source /path/to/backup
 #   ./fileBackupSystem.sh partial /path/to/source /path/to/backup "*.txt"
 
+set -euo pipefail
+
+# File Backup System
+
 backupType=$1
 sourceDir=$2
 backupDir=$3
-pattern=$4
+pattern=${4:-}
+
+if [ "$#" -lt 3 ]; then
+  echo "Usage: $0 [full|partial] <sourceDir> <backupDir> [pattern]"
+  exit 1
+fi
+
+if [ ! -d "$sourceDir" ]; then
+  echo "Source directory does not exist: $sourceDir"
+  exit 1
+fi
 
 timestamp=$(date +"%Y%m%d_%H%M%S")
-archiveName=""
-archivePath=""
+mkdir -p "$backupDir"
 
 if [ "$backupType" == "full" ]; then
-  mkdir -p "$backupDir"
   archiveName="backup_full_${timestamp}.tar.gz"
   archivePath="${backupDir}/${archiveName}"
   tar -czf "$archivePath" -C "$sourceDir" .
@@ -36,22 +48,22 @@ elif [ "$backupType" == "partial" ]; then
     exit 1
   fi
 
-  mkdir -p "$backupDir"
   archiveName="backup_partial_${timestamp}.tar.gz"
-  archivePath="${backupDir}/${archiveName}"
+  archivePath="$(realpath "$backupDir")/${archiveName}"
 
   cd "$sourceDir" || exit
-  matchingFiles=$(find . -type f -name "$pattern")
+  readarray -t files <<< "$(find . -type f -name "$pattern")"
 
-  if [ -z "$matchingFiles" ]; then
+  if [ "${#files[@]}" -eq 0 ]; then
     echo "No files matched pattern: $pattern"
     exit 1
   fi
 
-  tar -czf "$archivePath" $matchingFiles
+  tar -czf "$archivePath" "${files[@]}"
   echo "Partial backup created at: $archivePath"
 
 else
+  echo "Invalid backup type: $backupType"
   echo "Usage: $0 [full|partial] <sourceDir> <backupDir> [pattern]"
   exit 1
 fi

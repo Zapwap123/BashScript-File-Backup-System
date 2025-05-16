@@ -12,19 +12,40 @@ A Bash-based file backup utility that supports full and partial backups with com
 
 ## Usage
 
-### 1. Make the script executable:
+### 1. Clone the repository\*\*:
+
+```bash
+git clone https://github.com/Zapwap123/BashScript-File-Backup-System
+cd BashScript-Automated-File-Sorter
+```
+
+### 2. Make the script executable:
 
 ```bash
 chmod +x fileBackupSystem.sh
 ```
 
-### 2. Full Backup:
+### 3. Download test files (optional): If you'd like to test the script with pre-made files, run the following script to download test files:
+
+```bash
+chmod +x downloadTestFilesScript.sh
+./downloadTestFilesScript.sh
+```
+
+### 4. Full Backup:
 
 ```bash
 ./fileBackupSystem.sh full <sourceDir> <backupDir>
 ```
 
-### 3. Partial Backup (Pattern-based):
+#### Example:
+
+```bash
+mkdir -p full-Backup-Directory
+./fileBackupSystem.sh full file-organizer-test/ full-Backup-Directory/
+```
+
+### 5. Partial Backup (Pattern-based):
 
 ```bash
 ./fileBackupSystem.sh partial <sourceDir> <backupDir> <pattern>
@@ -33,6 +54,7 @@ chmod +x fileBackupSystem.sh
 #### Example:
 
 ```bash
+mkdir -p pattern-backup-partial
 ./fileBackupSystem.sh partial file-organizer-test/ pattern-backup-partial/ "*.txt"
 ```
 
